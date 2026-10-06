@@ -114,7 +114,15 @@ def main():
         return
 
     # Sidebar Filter Controls
-    st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/0/0e/Apache_Hadoop_logo.svg", width=160)
+    st.sidebar.markdown(
+        """
+        <div style="background: linear-gradient(135deg, #1e293b, #0f172a); padding: 12px; border-radius: 8px; border-left: 4px solid #38bdf8; margin-bottom: 12px;">
+            <span style="font-size: 1.15rem; font-weight: 700; color: #38bdf8;">🐘 Hadoop & Hive BDA</span><br>
+            <span style="font-size: 0.8rem; color: #94a3b8;">Distributed Big Data Platform</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
     st.sidebar.title("🎛️ Analysis Filters")
     st.sidebar.markdown("Filter cohort data across school, demographics, and study factors.")
 
@@ -306,11 +314,22 @@ def main():
                 x="absences",
                 y="G3",
                 color="failures",
-                trendline="ols",
                 title="School Absences vs Final Grade (Colored by Past Failures)",
                 color_continuous_scale="Reds",
-                labels={"absences": "Number of Absences", "G3": "Final Grade (0-20)"}
+                labels={"absences": "Number of Absences", "G3": "Final Grade (0-20)", "failures": "Past Failures"}
             )
+            # Add linear trendline cleanly without statsmodels version conflicts
+            if len(df) > 1 and df["absences"].nunique() > 1:
+                import numpy as np
+                m, b = np.polyfit(df["absences"], df["G3"], 1)
+                x_vals = np.array([df["absences"].min(), df["absences"].max()])
+                fig_abs.add_trace(go.Scatter(
+                    x=x_vals,
+                    y=m * x_vals + b,
+                    mode="lines",
+                    name="Trendline (Linear)",
+                    line=dict(color="#38bdf8", width=2, dash="dash")
+                ))
             fig_abs.update_layout(template="plotly_dark")
             st.plotly_chart(fig_abs, use_container_width=True)
 

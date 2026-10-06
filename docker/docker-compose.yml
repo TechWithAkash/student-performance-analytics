@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: student_bda_namenode
+    restart: always
+    ports:
+      - "9870:9870"
+      - "9000:9000"
+    environment:
+      - CLUSTER_NAME=student_bda_cluster
+    env_file:
+      - ./hadoop.env
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+      - ../data:/data
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: student_bda_datanode
+    restart: always
+    ports:
+      - "9864:9864"
+    env_file:
+      - ./hadoop.env
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+    depends_on:
+      - namenode
+
+  hive-server:
+    image: bde2020/hive:2.3.2-postgresql-metastore
+    container_name: student_bda_hiveserver
+    restart: always
+    ports:
+      - "10000:10000"
+      - "10002:10002"
+    env_file:
+      - ./hadoop.env
+    environment:
+      - HIVE_CORE_CONF_javax_jdo_option_ConnectionURL=jdbc:postgresql://hive-metastore-postgresql:5432/metastore
+    depends_on:
+      - namenode
+      - datanode
+    volumes:
+      - ../hive:/hive
+      - ../data:/data
+
+volumes:
+  hadoop_namenode:
+  hadoop_datanode:

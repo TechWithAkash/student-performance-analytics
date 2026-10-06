@@ -1,0 +1,5 @@
+studytime,study_time_desc,student_count,avg_final_grade,avg_failures
+1,< 2 hours,212,10.84,0.33
+2,2 to 5 hours,305,12.09,0.2
+3,5 to 10 hours,97,13.23,0.1
+4,> 10 hours,35,13.06,0.06

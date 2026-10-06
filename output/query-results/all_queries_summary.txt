@@ -1,0 +1,112 @@
+======================================================================
+STUDENT PERFORMANCE BDA - HIVEQL QUERY EXECUTION SUMMARY
+======================================================================
+
+[QUERY 1] Total Students: 649
+
+[QUERY 2] Final Grade Statistics:
+ avg_final_grade  min_final_grade  max_final_grade  stddev_final_grade
+           11.91                0               19                3.23
+
+[QUERY 3] Period Progression:
+ avg_period1_grade  avg_period2_grade  avg_final_grade
+              11.4              11.57            11.91
+
+[QUERY 4] Absence Summary:
+ avg_absences  min_absences  max_absences  stddev_absences
+         3.66             0            32             4.64
+
+[QUERY 5] Performance by Gender:
+gender  student_count  avg_G1  avg_G2  avg_final_grade  avg_absences
+     F            383   11.64   11.82            12.25          3.58
+     M            266   11.06   11.21            11.41          3.78
+
+[QUERY 6] Performance by School:
+school  total_students  avg_final_grade  avg_study_time  avg_absences
+    GP             423            12.58            2.01          4.22
+    MS             226            10.65            1.77          2.62
+
+[QUERY 7] Pass vs Fail Ratio:
+status  student_count  percentage
+Failed            100       15.41
+Passed            549       84.59
+
+[QUERY 8] Grade Distribution Categories:
+        grade_category  student_count  percentage  avg_study_time  avg_absences
+        01. Fail (0-9)            100       15.41            1.61          4.61
+02. Sufficient (10-13)            355       54.70            1.89          3.72
+      03. Good (14-15)            112       17.26            2.13          3.39
+ 04. Excellent (16-20)             82       12.63            2.24          2.59
+
+[QUERY 9] Study Time vs Final Grade:
+ studytime study_time_desc  student_count  avg_final_grade  avg_failures
+         1       < 2 hours            212            10.84          0.33
+         2    2 to 5 hours            305            12.09          0.20
+         3   5 to 10 hours             97            13.23          0.10
+         4      > 10 hours             35            13.06          0.06
+
+[QUERY 10] Previous Failures Impact:
+ failures  student_count  avg_final_grade  avg_absences
+        0            549            12.51          3.35
+        1             70             8.64          5.70
+        2             16             8.81          3.81
+        3             14             8.07          5.36
+
+[QUERY 11] Absences Impact:
+      absence_tier  student_count  avg_final_grade  avg_study_time
+ 00. Zero Absences            244            12.04            2.00
+     01. Low (1-4)            222            12.07            1.96
+02. Moderate (5-9)            113            11.77            1.80
+    03. High (10+)             70            11.13            1.80
+
+[QUERY 12] Parental Education vs Grade:
+ mother_education  father_education  student_count  avg_final_grade
+                4                 4             95            13.12
+                4                 3             44            13.41
+                4                 2             27            13.00
+                4                 1              8            11.13
+                4                 0              1            11.00
+                3                 4             23            12.35
+                3                 3             54            11.81
+                3                 2             42            11.93
+                3                 1             20            11.70
+                2                 4              8            13.13
+
+[QUERY 13] Educational Support:
+schoolsup famsup  student_count  avg_final_grade
+       no    yes            349            12.14
+       no     no            232            11.74
+      yes    yes             49            11.47
+      yes     no             19            10.79
+
+[QUERY 14] Higher Ed & Internet Access:
+wants_higher_education has_home_internet  student_count  avg_final_grade
+                   yes               yes            451            12.53
+                   yes                no            129            11.40
+                    no                no             22             8.86
+                    no               yes             47             8.77
+
+[QUERY 15] Academic Risk Students Identified: 177 students
+school sex  age  studytime  failures  absences higher  G1  G2  G3 risk_category
+    GP   M   18          1         2         0     no  11   9   0  FAILING RISK
+    MS   M   16          2         0         0    yes   7   0   0  FAILING RISK
+    MS   M   16          2         0         0    yes   8   7   0  FAILING RISK
+    MS   M   17          1         1         0    yes   7   0   0  FAILING RISK
+    MS   M   18          1         1         0     no   4   0   0  FAILING RISK
+    MS   F   18          1         1         0     no   8   6   0  FAILING RISK
+    MS   F   17          2         0         0    yes   8   8   0  FAILING RISK
+    MS   F   18          2         1         0    yes   9   0   0  FAILING RISK
+    MS   F   18          2         0         0    yes   5   0   0  FAILING RISK
+    MS   F   19          1         1         0     no   5   0   0  FAILING RISK
+
+[QUERY 16] Top Academic Achievers (G3 >= 16):
+ top_student_count  percentage_of_cohort  avg_study_time  avg_absences  avg_failures  pct_desiring_higher_ed  pct_with_internet
+                82                 12.63            2.24          2.59          0.01                   100.0               85.4
+
+[QUERY 17] Weekend Alcohol Consumption vs Final Grades:
+ weekend_alcohol_level  student_count  avg_final_grade  avg_absences  avg_study_time
+                     1            247            12.36          2.89            2.12
+                     2            150            12.26          3.69            1.90
+                     3            120            11.67          3.90            1.93
+                     4             87            11.03          4.64            1.62
+                     5             45            10.56          5.24            1.58

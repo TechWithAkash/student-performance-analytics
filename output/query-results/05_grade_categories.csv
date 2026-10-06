@@ -1,0 +1,5 @@
+grade_category,student_count,percentage,avg_study_time,avg_absences
+01. Fail (0-9),100,15.41,1.61,4.61
+02. Sufficient (10-13),355,54.7,1.89,3.72
+03. Good (14-15),112,17.26,2.13,3.39
+04. Excellent (16-20),82,12.63,2.24,2.59

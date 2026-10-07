@@ -17,51 +17,66 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+    .block-container {
+        padding-top: 1.8rem !important;
+        padding-bottom: 2rem !important;
+        max-width: 96% !important;
+    }
     .main-header {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        padding: 24px;
-        border-radius: 12px;
-        border-left: 6px solid #38bdf8;
+        padding: 10px 18px;
+        border-radius: 8px;
+        border-left: 4px solid #38bdf8;
         color: #f8fafc;
-        margin-bottom: 24px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
     }
-    .main-title {
-        font-size: 2.2rem;
-        font-weight: 800;
-        margin: 0;
-        letter-spacing: -0.025em;
+    h1.main-title, .main-title {
+        font-size: 1.35rem !important;
+        font-weight: 700 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        color: #f8fafc !important;
+        display: inline-block !important;
+        line-height: 1.2 !important;
     }
     .sub-title {
         color: #94a3b8;
-        font-size: 1.05rem;
-        margin-top: 6px;
+        font-size: 0.78rem;
+        margin: 2px 0 0 0;
     }
     .metric-card {
         background-color: #1e293b;
         border: 1px solid #334155;
-        border-radius: 10px;
-        padding: 18px;
+        border-radius: 8px;
+        padding: 8px 12px;
         text-align: center;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     .metric-value {
-        font-size: 2.2rem;
-        font-weight: 800;
+        font-size: 1.4rem;
+        font-weight: 700;
         color: #38bdf8;
         margin: 0;
+        line-height: 1.2;
     }
     .metric-label {
-        font-size: 0.85rem;
+        font-size: 0.7rem;
         color: #94a3b8;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-top: 4px;
+        letter-spacing: 0.04em;
+        margin-top: 2px;
+        margin-bottom: 0;
     }
     .badge {
         display: inline-block;
-        padding: 4px 10px;
+        padding: 3px 8px;
         border-radius: 9999px;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 600;
     }
     .badge-hadoop { background-color: #fef08a; color: #854d0e; }
@@ -116,9 +131,9 @@ def main():
     # Sidebar Filter Controls
     st.sidebar.markdown(
         """
-        <div style="background: linear-gradient(135deg, #1e293b, #0f172a); padding: 12px; border-radius: 8px; border-left: 4px solid #38bdf8; margin-bottom: 12px;">
-            <span style="font-size: 1.15rem; font-weight: 700; color: #38bdf8;">🐘 Hadoop & Hive BDA</span><br>
-            <span style="font-size: 0.8rem; color: #94a3b8;">Distributed Big Data Platform</span>
+        <div style="background: linear-gradient(135deg, #1e293b, #0f172a); padding: 8px 12px; border-radius: 6px; border-left: 3px solid #38bdf8; margin-bottom: 8px;">
+            <div style="font-size: 0.95rem; font-weight: 700; color: #38bdf8;">🐘 Hadoop & Hive BDA</div>
+            <div style="font-size: 0.72rem; color: #94a3b8;">Distributed Big Data Platform</div>
         </div>
         """,
         unsafe_allow_html=True
@@ -162,45 +177,48 @@ def main():
     if internet_only:
         df = df[df["internet"] == "yes"]
 
-    # Header Banner
+    # Header Banner (Compact Horizontal Layout with H1 Student Performance Analytics)
     st.markdown(
         """
         <div class="main-header">
-            <h1 class="main-title">🎓 Student Performance Big Data Analytics</h1>
-            <p class="sub-title">Distributed Storage & Querying: <b>Hadoop HDFS</b> + <b>Apache Hive (HiveQL)</b> | Interactive Analytics Layer</p>
+            <div>
+                <h1 class="main-title">Student Performance Analytics</h1>
+                <p class="sub-title">Big Data Analytics via <b>Hadoop HDFS</b> & <b>Apache Hive (HiveQL)</b></p>
+            </div>
+            <div style="background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 6px; padding: 4px 10px; font-size: 0.75rem; color: #38bdf8; font-weight: 600;">
+                UCI DATASET • 649 RECORDS
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # Top KPI Metrics Row
+    # Top KPI Metrics Row (Compact Cards)
     kpis = calculate_kpis(df)
     c1, c2, c3, c4, c5 = st.columns(5)
     with c1:
-        st.markdown(f'<div class="metric-card"><p class="metric-value">{kpis["total_students"]}</p><p class="metric-label">Enrolled Students</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><p class="metric-value">{kpis["total_students"]}</p><p class="metric-label">Enrolled</p></div>', unsafe_allow_html=True)
     with c2:
-        st.markdown(f'<div class="metric-card"><p class="metric-value">{kpis["avg_g3"]}<span style="font-size:1rem;color:#94a3b8">/20</span></p><p class="metric-label">Avg Final Grade (G3)</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><p class="metric-value">{kpis["avg_g3"]}<span style="font-size:0.85rem;color:#94a3b8">/20</span></p><p class="metric-label">Avg Grade (G3)</p></div>', unsafe_allow_html=True)
     with c3:
-        st.markdown(f'<div class="metric-card"><p class="metric-value">{kpis["pass_rate"]}%</p><p class="metric-label">Cohort Pass Rate (≥10)</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><p class="metric-value">{kpis["pass_rate"]}%</p><p class="metric-label">Pass Rate (≥10)</p></div>', unsafe_allow_html=True)
     with c4:
-        st.markdown(f'<div class="metric-card"><p class="metric-value">{kpis["avg_absences"]}</p><p class="metric-label">Avg Class Absences</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><p class="metric-value">{kpis["avg_absences"]}</p><p class="metric-label">Avg Absences</p></div>', unsafe_allow_html=True)
     with c5:
-        st.markdown(f'<div class="metric-card"><p class="metric-value">{kpis["max_g3"]}<span style="font-size:1rem;color:#94a3b8">/20</span></p><p class="metric-label">Peak Grade Achieved</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><p class="metric-value">{kpis["max_g3"]}<span style="font-size:0.85rem;color:#94a3b8">/20</span></p><p class="metric-label">Peak Grade</p></div>', unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # Navigation Tabs
+    # Interactive Navigation Tabs
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "📊 Executive Overview",
-        "📈 Grade Distributions & Comparison",
-        "🔍 Factor & Correlation Analysis",
-        "⚠️ Risk Students & High Achievers",
-        "🏛️ BDA Architecture & Hive Hub"
+        "📊 Cohort Pulse & Progression",
+        "📈 Performance Analysis & Benchmarks",
+        "🔬 Behavioral Factor Matrix",
+        "🚨 At-Risk Radar & Elite Achievers",
+        "🏛️ HiveQL Console & Architecture"
     ])
 
-    # ---------------- TAB 1: EXECUTIVE OVERVIEW ----------------
+    # ---------------- TAB 1: COHORT PROGRESSION ----------------
     with tab1:
-        st.subheader("Cohort Academic Progression & Trajectory")
+        st.subheader("Academic Trajectory: How Scores Evolve Across Evaluation Periods")
         col_t1, col_t2 = st.columns([3, 2])
 
         with col_t1:
@@ -214,7 +232,7 @@ def main():
                 x="Period",
                 y="Average Grade",
                 markers=True,
-                title="Academic Progression Across Evaluation Periods",
+                title="Period-by-Period Grade Progression (G1 ➔ G2 ➔ G3 Exam)",
                 color_discrete_sequence=["#38bdf8"],
             )
             fig_prog.update_layout(yaxis_range=[0, 20], template="plotly_dark")
@@ -232,16 +250,16 @@ def main():
                 hole=0.55,
                 color="Status",
                 color_discrete_map={"Passed (≥10)": "#10b981", "Failed (<10)": "#ef4444"},
-                title="Pass / Fail Proportions",
+                title="Cohort Passing Ratio (Passing Threshold: G3 ≥ 10 / 20)",
             )
             fig_pie.update_layout(template="plotly_dark")
             st.plotly_chart(fig_pie, use_container_width=True)
 
         st.info("💡 **Hive Insight:** The correlation between G1, G2, and final G3 indicates early academic evaluations strongly predict final student success, allowing early interventions by educators.")
 
-    # ---------------- TAB 2: GRADE DISTRIBUTIONS ----------------
+    # ---------------- TAB 2: PERFORMANCE ANALYSIS ----------------
     with tab2:
-        st.subheader("Portuguese Grade Distribution & Group Segments")
+        st.subheader("Institutional Benchmarks: Grade Distributions & School Comparison")
         c_d1, c_d2 = st.columns(2)
 
         with c_d1:
@@ -264,7 +282,7 @@ def main():
                 text="Count",
                 color="Category",
                 color_discrete_sequence=px.colors.sequential.Teal,
-                title="Cohort Distribution Across Standard Grade Categories",
+                title="Student Distribution Across Portuguese Grade Categories",
             )
             fig_cat.update_layout(template="plotly_dark", showlegend=False)
             st.plotly_chart(fig_cat, use_container_width=True)
@@ -276,7 +294,7 @@ def main():
                 x="school",
                 y="G3",
                 color="sex",
-                title="Final Grade Spread by School and Gender",
+                title="School Performance Face-Off: Final Grade Spread by School (GP vs MS) & Gender",
                 color_discrete_map={"F": "#ec4899", "M": "#3b82f6"},
                 labels={"G3": "Final Grade", "school": "School", "sex": "Gender"}
             )
@@ -285,7 +303,7 @@ def main():
 
     # ---------------- TAB 3: FACTOR & CORRELATION ----------------
     with tab3:
-        st.subheader("Academic, Lifestyle, and Family Background Factors")
+        st.subheader("Factor Matrix: Correlating Study Habits, Attendance & Family Support")
         cf1, cf2 = st.columns(2)
 
         with cf1:
@@ -300,7 +318,7 @@ def main():
                 x="study_desc",
                 y="G3",
                 text="G3",
-                title="Weekly Study Time vs Average Final Grade (G3)",
+                title="Study Time Payoff: Does More Weekly Study Correlate with Higher Final Grades?",
                 color="G3",
                 color_continuous_scale="Viridis",
             )
@@ -314,7 +332,7 @@ def main():
                 x="absences",
                 y="G3",
                 color="failures",
-                title="School Absences vs Final Grade (Colored by Past Failures)",
+                title="Attendance vs Outcomes: Absences & Failure History Correlation with Final G3",
                 color_continuous_scale="Reds",
                 labels={"absences": "Number of Absences", "G3": "Final Grade (0-20)", "failures": "Past Failures"}
             )
@@ -342,7 +360,7 @@ def main():
                 x="Medu",
                 y="Fedu",
                 z="G3",
-                title="Mother's (Medu) vs Father's (Fedu) Education Impact on G3",
+                title="Family Education Synergy: Mother's (Medu) vs Father's (Fedu) Impact on G3",
                 labels={"Medu": "Mother Education (0-4)", "Fedu": "Father Education (0-4)", "G3": "Avg G3"},
             )
             fig_parent.update_layout(template="plotly_dark")
@@ -356,7 +374,7 @@ def main():
                 x="Walc",
                 y="G3",
                 markers=True,
-                title="Weekend Alcohol Consumption (Walc: 1=Low, 5=High) vs Avg G3",
+                title="Social Habits Impact: Weekend Alcohol Consumption (Walc) vs Academic Outcome",
                 color_discrete_sequence=["#f43f5e"]
             )
             fig_alc.update_layout(template="plotly_dark", yaxis_range=[0, 20])
@@ -364,12 +382,12 @@ def main():
 
     # ---------------- TAB 4: RISK & ACHIEVERS ----------------
     with tab4:
-        st.subheader("Academic Risk Identification & Top Achievers Drill-Down")
+        st.subheader("Intervention Radar & Achiever Profiles: Actionable Student Segmentation")
         
         col_r1, col_r2 = st.columns([1, 1])
         with col_r1:
-            st.markdown("### ⚠️ At-Risk Students Filter")
-            st.markdown("Identifies students meeting warning conditions ($G3 < 10$, $Failures > 0$, or $Absences > 10$).")
+            st.markdown("### 🚨 Early Intervention Radar: At-Risk Students")
+            st.markdown("Flags students at academic risk ($G3 < 10$, $Failures > 0$, or $Absences > 10$).")
             risk_df = df[(df["G3"] < 10) | (df["failures"] > 0) | (df["absences"] > 10)].copy()
             risk_df["Risk Category"] = risk_df.apply(
                 lambda r: "CRITICAL RISK" if r["G3"] < 10 and r["failures"] > 0 and r["absences"] > 10
@@ -386,7 +404,7 @@ def main():
             st.download_button("📥 Download At-Risk Students CSV", csv_risk, "at_risk_students.csv", "text/csv")
 
         with col_r2:
-            st.markdown("### 🌟 Top Academic Achievers ($G3 \\ge 16$)")
+            st.markdown("### 🌟 Elite Performers Spotlight ($G3 \\ge 16/20$)")
             top_df = df[df["G3"] >= 16].copy()
             st.write(f"Cohort Top Performers: **{len(top_df)}** students ({round(len(top_df)*100/len(df), 1)}% of cohort).")
             st.dataframe(
@@ -399,7 +417,7 @@ def main():
 
     # ---------------- TAB 5: BDA ARCHITECTURE & HIVE HUB ----------------
     with tab5:
-        st.subheader("Big Data Technical Architecture & HiveQL Execution Hub")
+        st.subheader("Distributed Data Architecture & Interactive HiveQL Query Console")
         st.markdown(
             """
             ```
@@ -412,7 +430,7 @@ def main():
             """
         )
 
-        st.markdown("#### Inspect HiveQL Query Scripts & Execution Outputs")
+        st.markdown("#### Interactive HiveQL Script & Execution Output Inspector")
         script_choice = st.selectbox(
             "Select HiveQL Script:",
             [

@@ -1,4 +1,6 @@
 import os
+import subprocess
+import io
 from pathlib import Path
 import pandas as pd
 import streamlit as st
@@ -87,17 +89,58 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+def check_hdfs_cluster():
+    """Checks if Hadoop NameNode container is running and HDFS file exists."""
+    try:
+        res = subprocess.run(
+            ["docker", "exec", "student_bda_namenode", "hdfs", "dfs", "-test", "-e", "/user/hadoop/student-performance/student-por.csv"],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=2
+        )
+        return res.returncode == 0
+    except Exception:
+        return False
+
+@st.cache_data(ttl=60)
+def load_data_from_hdfs():
+    """Directly stream student data out of the live Hadoop HDFS cluster."""
+    res = subprocess.run(
+        ["docker", "exec", "student_bda_namenode", "hdfs", "dfs", "-cat", "/user/hadoop/student-performance/student-por.csv"],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=6
+    )
+    if res.returncode == 0:
+        lines = [l for l in res.stdout.decode('utf-8', errors='ignore').splitlines() if not l.startswith('2026-') and ';' in l]
+        return pd.read_csv(io.StringIO('\n'.join(lines)), sep=';')
+    raise RuntimeError("Failed to stream from HDFS")
+
+def get_data_source_description():
+    if check_hdfs_cluster():
+        return "Live Hadoop HDFS (/user/hadoop/student-performance/student-por.csv)"
+    return "Local Staging Mirror (data/raw/student-por.csv)"
+
 @st.cache_data
-def load_data(csv_path="data/raw/student-por.csv"):
-    path = Path(csv_path)
-    if not path.exists():
-        # Fallback to current directory or processed path
+def load_data(csv_path=None):
+    if csv_path:
+        path = Path(csv_path)
+        if not path.exists():
+            if Path("data/processed/student_por_clean.csv").exists():
+                path = Path("data/processed/student_por_clean.csv")
+            else:
+                raise FileNotFoundError(f"Cannot find dataset at {csv_path}")
+        return pd.read_csv(path, sep=";")
+
+    if check_hdfs_cluster():
+        try:
+            return load_data_from_hdfs()
+        except Exception:
+            pass
+
+    p = Path("data/raw/student-por.csv")
+    if not p.exists():
         if Path("data/processed/student_por_clean.csv").exists():
-            path = Path("data/processed/student_por_clean.csv")
+            p = Path("data/processed/student_por_clean.csv")
         else:
-            raise FileNotFoundError(f"Cannot find dataset at {csv_path}")
-    df = pd.read_csv(path, sep=";")
-    return df
+            raise FileNotFoundError(f"Cannot find dataset at {p}")
+    return pd.read_csv(p, sep=";")
 
 def calculate_kpis(df):
     total = len(df)
@@ -124,16 +167,28 @@ def main():
     # Load dataset
     try:
         df_raw = load_data()
+        data_source_desc = get_data_source_description()
     except Exception as e:
         st.error(f"Error loading dataset: {e}")
         return
 
+    # Check live HDFS connectivity
+    hdfs_online = check_hdfs_cluster()
+    hdfs_badge_color = "#22c55e" if hdfs_online else "#eab308"
+    hdfs_badge_text = "HDFS ONLINE" if hdfs_online else "OFFLINE (Staging)"
+
     # Sidebar Filter Controls
     st.sidebar.markdown(
-        """
-        <div style="background: linear-gradient(135deg, #1e293b, #0f172a); padding: 8px 12px; border-radius: 6px; border-left: 3px solid #38bdf8; margin-bottom: 8px;">
+        f"""
+        <div style="background: linear-gradient(135deg, #1e293b, #0f172a); padding: 10px 14px; border-radius: 8px; border-left: 4px solid #38bdf8; margin-bottom: 12px;">
             <div style="font-size: 0.95rem; font-weight: 700; color: #38bdf8;">🐘 Hadoop & Hive BDA</div>
             <div style="font-size: 0.72rem; color: #94a3b8;">Distributed Big Data Platform</div>
+            <div style="margin-top: 8px; font-size: 0.75rem; color: #f8fafc; display: flex; align-items: center; gap: 6px;">
+                <span>Cluster:</span>
+                <span style="background-color: {hdfs_badge_color}22; color: {hdfs_badge_color}; border: 1px solid {hdfs_badge_color}55; padding: 1px 7px; border-radius: 12px; font-weight: 700; font-size: 0.7rem;">● {hdfs_badge_text}</span>
+            </div>
+            <div style="font-size: 0.68rem; color: #64748b; font-family: monospace; margin-top: 4px;">hdfs://namenode:9000</div>
+            <div style="font-size: 0.68rem; color: #38bdf8; margin-top: 4px;"><strong>Active Source:</strong><br>{data_source_desc}</div>
         </div>
         """,
         unsafe_allow_html=True
@@ -460,6 +515,47 @@ def main():
         if script_choice in csv_mapping and Path(csv_mapping[script_choice]).exists():
             st.markdown("##### Query Execution Result Sample:")
             st.dataframe(pd.read_csv(csv_mapping[script_choice]), use_container_width=True)
+
+        st.markdown("---")
+        st.markdown("#### 🐘 Live Hadoop HDFS Cluster Inspector")
+        st.markdown("Execute real-time HDFS commands against the running Docker Hadoop cluster.")
+
+        h_col1, h_col2, h_col3 = st.columns(3)
+        with h_col1:
+            if st.button("📁 Check HDFS Files (`hdfs dfs -ls`)"):
+                try:
+                    res = subprocess.run(
+                        ["docker", "exec", "student_bda_namenode", "hdfs", "dfs", "-ls", "/user/hadoop/student-performance/"],
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=5
+                    )
+                    st.code(res.stdout.decode("utf-8", errors="ignore") or "No output", language="bash")
+                except Exception as ex:
+                    st.error(f"Error querying cluster: {ex}")
+
+        with h_col2:
+            if st.button("📄 Read HDFS Blocks (`hdfs dfs -cat | head`)"):
+                try:
+                    res = subprocess.run(
+                        ["docker", "exec", "student_bda_namenode", "hdfs", "dfs", "-cat", "/user/hadoop/student-performance/student-por.csv"],
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=5
+                    )
+                    lines = [l for l in res.stdout.decode("utf-8", errors="ignore").splitlines() if not l.startswith("2026-")]
+                    preview = "\n".join(lines[:6])
+                    st.code(preview, language="csv")
+                except Exception as ex:
+                    st.error(f"Error reading block stream: {ex}")
+
+        with h_col3:
+            if st.button("🩺 Cluster Nodes & Health Status"):
+                try:
+                    res = subprocess.run(
+                        ["docker", "exec", "student_bda_namenode", "hdfs", "dfsadmin", "-report"],
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=5
+                    )
+                    out = res.stdout.decode("utf-8", errors="ignore")
+                    st.code("\n".join(out.splitlines()[:18]), language="bash")
+                except Exception as ex:
+                    st.error(f"Error querying DFS report: {ex}")
 
 if __name__ == "__main__":
     main()

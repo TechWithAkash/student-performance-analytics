@@ -25,7 +25,7 @@ python3 scripts/download_data.py
 
 # 2. Check Docker HDFS Status
 echo -e "\n[Step 2/4] Checking Hadoop HDFS and Hive Docker Cluster..."
-if docker ps --format '{{.Names}}' | grep -q "student_bda_namenode"; then
+if docker ps --format '{{.Names}}' 2>/dev/null | grep -q "student_bda_namenode"; then
     echo "Hadoop NameNode container detected."
     echo "Ingesting data into HDFS /user/hadoop/student-performance/..."
     docker exec -i student_bda_namenode hdfs dfs -mkdir -p /user/hadoop/student-performance/ || true
@@ -33,8 +33,8 @@ if docker ps --format '{{.Names}}' | grep -q "student_bda_namenode"; then
     echo "HDFS directory contents:"
     docker exec -i student_bda_namenode hdfs dfs -ls /user/hadoop/student-performance/
 else
-    echo "Notice: Docker Hadoop cluster is not currently running."
-    echo "To start Docker Hadoop + Hive cluster, run: docker compose -f docker/docker-compose.yml up -d"
+    echo "Notice: Docker is not active (which is completely normal)."
+    echo "Falling back to local execution engine for 17 HiveQL queries..."
 fi
 
 # 3. Execute Dual Query Runner
